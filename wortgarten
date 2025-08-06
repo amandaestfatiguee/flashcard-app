@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORTGARTEN - Flashcards</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #f5f5f5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-top: 20px;
+            position: relative;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ffd54f, #ffeb3b, #fff176);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+            letter-spacing: 1px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo::before {
+            content: '❀';
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffd54f;
+            font-size: 20px;
+        }
+
+        .logo::after {
+            content: '❀';
+            position: absolute;
+            right: -40px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #ffd54f;
+            font-size: 20px;
+        }
+
+        .module-name {
+            font-size: 14px;
+            color: #888;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: #888;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+
+        .language-selector {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .current-language {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .current-language:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .language-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .language-flag {
+            font-size: 24px;
+        }
+
+        .language-details h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .language-details p {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .language-dropdown {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .language-dropdown.active {
+            display: block;
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            margin-bottom: 5px;
+            border: 1px solid transparent;
+        }
+
+        .language-option:hover {
+            background: rgba(255, 213, 79, 0.1);
+            border-color: rgba(255, 213, 79, 0.2);
+        }
+
+        .language-option.active {
+            background: linear-gradient(45deg, #ffd54f, #fff176);
+            color: #1a1a1a;
+        }
+
+        .add-language-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 213, 79, 0.1);
+            border: 1px dashed rgba(255, 213, 79, 0.4);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            color: #fff9c4;
+        }
+
+        .add-language-btn:hover {
+            background: rgba(255, 213, 79, 0.2);
+            border-color: rgba(255, 213, 79, 0.6);
+            transform: translateY(-1px);
+        }
+
+        .camera-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .camera-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(45deg, #ffd54f, #fff176);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            box-shadow: 0 8px 25px rgba(255, 213, 79, 0.3);
+        }
+
+        .capture-btn {
+            background: linear-gradient(45deg, #ffd54f, #fff176);
+            border: none;
+            color: #1a1a1a;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 213, 79, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .capture-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255, 213, 79, 0.4);
+        }
+
+        .flashcard {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 0;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            height: 300px;
+            position: relative;
+        }
+
+        .flashcard:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .flashcard.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #ffd54f, #fff176, #ffeb3b);
+        }
+
+        .object-name {
+            font-size: 14px;
+            color: #a5d6a7;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .german-word {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .pronunciation {
+            font-size: 16px;
+            color: rgba(26, 26, 26, 0.8);
+            font-style: italic;
+            margin-bottom: 15px;
+        }
+
+        .example-sentence {
+            font-size: 14px;
+            color: rgba(26, 26, 26, 0.9);
+            text-align: center;
+            line-height: 1.4;
+            font-style: italic;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffd54f;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .add-word-form, .add-language-form {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #ccc;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #ffd54f;
+            box-shadow: 0 0 0 3px rgba(255, 213, 79, 0.2);
+        }
+
+        .form-input::placeholder {
+            color: #666;
+        }
+
+        .form-select option {
+            background: #2d2d2d;
+            color: white;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-save, .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-save {
+            background: linear-gradient(45deg, #ffd54f, #fff176);
+            color: #1a1a1a;
+            box-shadow: 0 4px 15px rgba(255, 213, 79, 0.3);
+        }
+
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ccc;
+        }
+
+        .btn-save:hover, .btn-cancel:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-save:hover {
+            box-shadow: 0 6px 20px rgba(255, 213, 79, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .flashcard {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+
+    </style>
+</head>
+<body>
+
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">WORTGARTEN</div>
+            <div class="module-name">🌼📸 Flashcards mit Fotos</div>
+            <div class="subtitle">Kultiviere dein Vokabular durch visuelle Entdeckungen</div>
+        </div>
+
+        <div class="language-selector">
+            <div class="current-language" onclick="toggleLanguageDropdown()">
+                <div class="language-info">
+                    <span class="language-flag" id="currentFlag">🇩🇪</span>
+                    <div class="language-details">
+                        <h3 id="currentLanguage">Deutsch</h3>
+                        <p id="currentWordCount">0 Wörter gepflanzt</p>
+                    </div>
+                </div>
+                <span id="dropdownArrow">▼</span>
+            </div>
+            
+            <div class="language-dropdown" id="languageDropdown">
+                <div id="languageList"></div>
+                <div class="add-language-btn" onclick="showAddLanguageForm()">
+                    <span>🌱</span>
+                    <span>Neuen Sprachgarten anlegen</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="add-language-form" id="addLanguageForm">
+            <div class="form-group">
+                <label class="form-label">Sprache</label>
+                <select class="form-select" id="newLanguageSelect">
+                    <option value="">Sprache auswählen...</option>
+                    <option value="fr">🇫🇷 Französisch</option>
+                    <option value="es">🇪🇸 Spanisch</option>
+                    <option value="it">🇮🇹 Italienisch</option>
+                    <option value="pt">🇵🇹 Portugiesisch</option>
+                    <option value="en">🇺🇸 Englisch</option>
+                    <option value="ja">🇯🇵 Japanisch</option>
+                    <option value="ko">🇰🇷 Koreanisch</option>
+                    <option value="zh">🇨🇳 Chinesisch</option>
+                    <option value="ru">🇷🇺 Russisch</option>
+                </select>
+            </div>
+            <div class="form-buttons">
+                <button class="btn-save" onclick="addNewLanguage()">Pflanzen</button>
+                <button class="btn-cancel" onclick="cancelAddLanguage()">Abbrechen</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalWords">0</div>
+                <div class="stat-label">Gepflanzt</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="todayWords">0</div>
+                <div class="stat-label">Heute</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="streak">0</div>
+                <div class="stat-label">Wachstum</div>
+            </div>
+        </div>
+
+        <div class="camera-section">
+            <div class="camera-icon">📸</div>
+            <p style="margin-bottom: 20px; color: #ccc;">Entdecke die Welt und lass dein Vokabular wachsen!</p>
+            <button class="capture-btn" onclick="captureWord()">Wort pflanzen</button>
+        </div>
+
+        <div class="add-word-form" id="addWordForm">
+            <div class="form-group">
+                <label class="form-label">Was hast du entdeckt?</label>
+                <input type="text" class="form-input" id="objectName" placeholder="z.B. Lineal, Stift, Tisch...">
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="targetLanguageLabel">Wort auf Deutsch</label>
+                <input type="text" class="form-input" id="targetWord" placeholder="z.B. das Lineal">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Aussprache</label>
+                <input type="text" class="form-input" id="pronunciation" placeholder="z.B. [das li-ne-'aːl]">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Beispielsatz (optional)</label>
+                <input type="text" class="form-input" id="exampleSentence" placeholder="z.B. Ich brauche ein Lineal.">
+            </div>
+            <div class="form-buttons">
+                <button class="btn-save" onclick="saveWord()">Einpflanzen</button>
+                <button class="btn-cancel" onclick="cancelAdd()">Abbrechen</button>
+            </div>
+        </div>
+
+        <div id="flashcards">
+            <div class="empty-state">
+                <div class="empty-icon">🌱</div>
+                <p>Dein Wortgarten wartet auf die ersten Samen</p>
+                <p style="font-size: 12px; margin-top: 10px;">Beginne deine Sprachreise!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const languageData = {
+            'de': { name: 'Deutsch', flag: '🇩🇪', placeholder: 'z.B. das Lineal' },
+            'fr': { name: 'Französisch', flag: '🇫🇷', placeholder: 'ex: la règle' },
+            'es': { name: 'Spanisch', flag: '🇪🇸', placeholder: 'ej: la regla' },
+            'it': { name: 'Italienisch', flag: '🇮🇹', placeholder: 'es: il righello' },
+            'pt': { name: 'Portugiesisch', flag: '🇵🇹', placeholder: 'ex: a régua' },
+            'en': { name: 'Englisch', flag: '🇺🇸', placeholder: 'e.g. ruler' },
+            'ja': { name: 'Japanisch', flag: '🇯🇵', placeholder: '例：定規' },
+            'ko': { name: 'Koreanisch', flag: '🇰🇷', placeholder: '예: 자' },
+            'zh': { name: 'Chinesisch', flag: '🇨🇳', placeholder: '例：尺子' },
+            'ru': { name: 'Russisch', flag: '🇷🇺', placeholder: 'напр: линейка' }
+        };
+
+        let currentLanguage = 'de';
+        let languages = JSON.parse(localStorage.getItem('wortgartenLanguages') || '["de"]');
+        let allWords = JSON.parse(localStorage.getItem('wortgartenAllWords') || '{}');
+        let allStats = JSON.parse(localStorage.getItem('wortgartenAllStats') || '{}');
+
+        // Initialize default language data
+        if (!allWords[currentLanguage]) allWords[currentLanguage] = [];
+        if (!allStats[currentLanguage]) allStats[currentLanguage] = {"total": 0, "today": 0, "streak": 0, "lastDate": ""};
+
+        function getCurrentWords() {
+            return allWords[currentLanguage] || [];
+        }
+
+        function getCurrentStats() {
+            return allStats[currentLanguage] || {"total": 0, "today": 0, "streak": 0, "lastDate": ""};
+        }
+
+        function saveCurrentWords(words) {
+            allWords[currentLanguage] = words;
+            localStorage.setItem('wortgartenAllWords', JSON.stringify(allWords));
+        }
+
+        function saveCurrentStats(stats) {
+            allStats[currentLanguage] = stats;
+            localStorage.setItem('wortgartenAllStats', JSON.stringify(allStats));
+        }
+
+        function toggleLanguageDropdown() {
+            const dropdown = document.getElementById('languageDropdown');
+            const arrow = document.getElementById('dropdownArrow');
+            dropdown.classList.toggle('active');
+            arrow.textContent = dropdown.classList.contains('active') ? '▲' : '▼';
+            renderLanguageList();
+        }
+
+        function renderLanguageList() {
+            const list = document.getElementById('languageList');
+            list.innerHTML = languages.map(lang => `
+                <div class="language-option ${lang === currentLanguage ? 'active' : ''}" onclick="switchLanguage('${lang}')">
+                    <span class="language-flag">${languageData[lang].flag}</span>
+                    <div class="language-details">
+                        <h3>${languageData[lang].name}</h3>
+                        <p>${(allWords[lang] || []).length} Wörter gepflanzt</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function switchLanguage(lang) {
+            currentLanguage = lang;
+            updateCurrentLanguageDisplay();
+            updateStats();
+            renderFlashcards();
+            toggleLanguageDropdown();
+            updateFormLabels();
+        }
+
+        function updateCurrentLanguageDisplay() {
+            document.getElementById('currentFlag').textContent = languageData[currentLanguage].flag;
+            document.getElementById('currentLanguage').textContent = languageData[currentLanguage].name;
+            document.getElementById('currentWordCount').textContent = `${getCurrentWords().length} Wörter gepflanzt`;
+        }
+
+        function updateFormLabels() {
+            const label = document.getElementById('targetLanguageLabel');
+            const input = document.getElementById('targetWord');
+            label.textContent = `Wort auf ${languageData[currentLanguage].name}`;
+            input.placeholder = languageData[currentLanguage].placeholder;
+        }
+
+        function showAddLanguageForm() {
+            document.getElementById('addLanguageForm').style.display = 'block';
+            toggleLanguageDropdown();
+        }
+
+        function cancelAddLanguage() {
+            document.getElementById('addLanguageForm').style.display = 'none';
+            document.getElementById('newLanguageSelect').value = '';
+        }
+
+        function addNewLanguage() {
+            const select = document.getElementById('newLanguageSelect');
+            const newLang = select.value;
+            
+            if (!newLang) {
+                alert('Bitte wähle eine Sprache aus!');
+                return;
+            }
+
+            if (languages.includes(newLang)) {
+                alert('Dieser Sprachgarten existiert bereits!');
+                return;
+            }
+
+            languages.push(newLang);
+            if (!allWords[newLang]) allWords[newLang] = [];
+            if (!allStats[newLang]) allStats[newLang] = {"total": 0, "today": 0, "streak": 0, "lastDate": ""};
+            
+            localStorage.setItem('wortgartenLanguages', JSON.stringify(languages));
+            localStorage.setItem('wortgartenAllWords', JSON.stringify(allWords));
+            localStorage.setItem('wortgartenAllStats', JSON.stringify(allStats));
+            
+            switchLanguage(newLang);
+            cancelAddLanguage();
+        }
+
+        function updateStats() {
+            const stats = getCurrentStats();
+            const today = new Date().toDateString();
+            
+            if (stats.lastDate !== today) {
+                if (stats.lastDate === new Date(Date.now() - 86400000).toDateString()) {
+                    stats.streak++;
+                } else if (stats.lastDate !== today) {
+                    stats.streak = stats.today > 0 ? 1 : 0;
+                }
+                stats.today = 0;
+                stats.lastDate = today;
+            }
+
+            document.getElementById('totalWords').textContent = stats.total;
+            document.getElementById('todayWords').textContent = stats.today;
+            document.getElementById('streak').textContent = stats.streak;
+            
+            saveCurrentStats(stats);
+        }
+
+        function captureWord() {
+            document.getElementById('addWordForm').style.display = 'block';
+            document.getElementById('objectName').focus();
+        }
+
+        function cancelAdd() {
+            document.getElementById('addWordForm').style.display = 'none';
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('objectName').value = '';
+            document.getElementById('targetWord').value = '';
+            document.getElementById('pronunciation').value = '';
+            document.getElementById('exampleSentence').value = '';
+        }
+
+        function saveWord() {
+            const objectName = document.getElementById('objectName').value.trim();
+            const targetWord = document.getElementById('targetWord').value.trim();
+            const pronunciation = document.getElementById('pronunciation').value.trim();
+            const exampleSentence = document.getElementById('exampleSentence').value.trim();
+
+            if (!objectName || !targetWord) {
+                alert('Bitte fülle mindestens das Objekt und das Wort aus!');
+                return;
+            }
+
+            const newWord = {
+                id: Date.now(),
+                objectName,
+                targetWord,
+                pronunciation,
+                exampleSentence,
+                dateAdded: new Date().toISOString(),
+                emoji: getRandomEmoji(),
+                language: currentLanguage
+            };
+
+            const words = getCurrentWords();
+            words.unshift(newWord);
+            saveCurrentWords(words);
+            
+            const stats = getCurrentStats();
+            stats.total++;
+            stats.today++;
+            saveCurrentStats(stats);
+            
+            updateStats();
+            updateCurrentLanguageDisplay();
+            renderFlashcards();
+            cancelAdd();
+        }
+
+        function getRandomEmoji() {
+            const emojis = ['📚', '✏️', '🖊️', '📏', '🪑', '🚗', '🏠', '🌳', '☕', '🍎', '👕', '👟', '📱', '💻', '🎒', '🔑', '🚪', '🪟', '💡', '🕰️'];
+            return emojis[Math.floor(Math.random() * emojis.length)];
+        }
+
+        function renderFlashcards() {
+            const container = document.getElementById('flashcards');
+            const words = getCurrentWords();
+            
+            if (words.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🌱</div>
+                        <p>Dein Wortgarten wartet auf die ersten Samen</p>
+                        <p style="font-size: 12px; margin-top: 10px;">Beginne deine Sprachreise!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = words.map(word => `
+                <div class="flashcard" onclick="flipCard(this)">
+                    <div class="card-front">
+                        <div style="font-size: 60px; margin-bottom: 15px;">${word.emoji}</div>
+                        <div class="object-name">${word.objectName}</div>
+                        <div style="font-size: 12px; color: #81c784; margin-top: 10px;">Tippen zum Aufblühen</div>
+                    </div>
+                    <div class="card-back">
+                        <div class="german-word">${word.targetWord}</div>
+                        ${word.pronunciation ? `<div class="pronunciation">${word.pronunciation}</div>` : ''}
+                        ${word.exampleSentence ? `<div class="example-sentence">"${word.exampleSentence}"</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function flipCard(card) {
+            card.classList.toggle('flipped');
+            setTimeout(() => {
+                card.classList.remove('flipped');
+            }, 3000);
+        }
+
+        // Initialize app
+        updateCurrentLanguageDisplay();
+        updateFormLabels();
+        updateStats();
+        renderFlashcards();
+
+        // Update today's count at midnight
+        setInterval(() => {
+            const now = new Date();
+            if (now.getHours() === 0 && now.getMinutes() === 0) {
+                updateStats();
+            }
+        }, 60000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96aed652c04aa010',t:'MTc1NDQ4NjQ4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
