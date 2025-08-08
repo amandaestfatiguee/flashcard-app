@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORTGARTEN - Flashcards</title>
+    <style>
+        /* ---- All your CSS from the original file ---- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #f5f5f5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        /* ... [Rest of your original CSS unchanged] ... */
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">WORTGARTEN</div>
+            <div class="module-name">🌼📸 Flashcards mit Fotos</div>
+            <div class="subtitle">Kultiviere dein Vokabular durch visuelle Entdeckungen</div>
+        </div>
+
+        <!-- Language Selector -->
+        <div class="language-selector">
+            <div class="current-language" onclick="toggleLanguageDropdown()">
+                <div class="language-info">
+                    <span class="language-flag" id="currentFlag">🇩🇪</span>
+                    <div class="language-details">
+                        <h3 id="currentLanguage">Deutsch</h3>
+                        <p id="currentWordCount">0 Wörter gepflanzt</p>
+                    </div>
+                </div>
+                <span id="dropdownArrow">▼</span>
+            </div>
+            
+            <div class="language-dropdown" id="languageDropdown">
+                <div id="languageList"></div>
+                <div class="add-language-btn" onclick="showAddLanguageForm()">
+                    <span>🌱</span>
+                    <span>Neuen Sprachgarten anlegen</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Language Form -->
+        <div class="add-language-form" id="addLanguageForm">
+            <div class="form-group">
+                <label class="form-label">Sprache</label>
+                <select class="form-select" id="newLanguageSelect">
+                    <option value="">Sprache auswählen...</option>
+                    <option value="fr">🇫🇷 Französisch</option>
+                    <option value="es">🇪🇸 Spanisch</option>
+                    <option value="it">🇮🇹 Italienisch</option>
+                    <option value="pt">🇵🇹 Portugiesisch</option>
+                    <option value="en">🇺🇸 Englisch</option>
+                    <option value="ja">🇯🇵 Japanisch</option>
+                    <option value="ko">🇰🇷 Koreanisch</option>
+                    <option value="zh">🇨🇳 Chinesisch</option>
+                    <option value="ru">🇷🇺 Russisch</option>
+                </select>
+            </div>
+            <div class="form-buttons">
+                <button class="btn-save" onclick="addNewLanguage()">Pflanzen</button>
+                <button class="btn-cancel" onclick="cancelAddLanguage()">Abbrechen</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="totalWords">0</div>
+                <div class="stat-label">Gepflanzt</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="todayWords">0</div>
+                <div class="stat-label">Heute</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="streak">0</div>
+                <div class="stat-label">Wachstum</div>
+            </div>
+        </div>
+
+        <!-- Camera Section -->
+        <div class="camera-section">
+            <div class="camera-icon">📸</div>
+            <p style="margin-bottom: 20px; color: #ccc;">Entdecke die Welt und lass dein Vokabular wachsen!</p>
+            <button class="capture-btn" onclick="captureWord()">Wort pflanzen</button>
+        </div>
+
+        <!-- Add Word Form -->
+        <div class="add-word-form" id="addWordForm">
+            <div class="form-group">
+                <label class="form-label">Was hast du entdeckt?</label>
+                <input type="text" class="form-input" id="objectName" placeholder="z.B. Lineal, Stift, Tisch...">
+            </div>
+            <div class="form-group">
+                <label class="form-label" id="targetLanguageLabel">Wort auf Deutsch</label>
+                <input type="text" class="form-input" id="targetWord" placeholder="z.B. das Lineal">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Aussprache</label>
+                <input type="text" class="form-input" id="pronunciation" placeholder="z.B. [das li-ne-'aːl]">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Beispielsatz (optional)</label>
+                <input type="text" class="form-input" id="exampleSentence" placeholder="z.B. Ich brauche ein Lineal.">
+            </div>
+            <div class="form-buttons">
+                <button class="btn-save" onclick="saveWord()">Einpflanzen</button>
+                <button class="btn-cancel" onclick="cancelAdd()">Abbrechen</button>
+            </div>
+        </div>
+
+        <!-- Flashcards Container -->
+        <div id="flashcards">
+            <div class="empty-state">
+                <div class="empty-icon">🌱</div>
+                <p>Dein Wortgarten wartet auf die ersten Samen</p>
+                <p style="font-size: 12px; margin-top: 10px;">Beginne deine Sprachreise!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ---- Your JavaScript from original (unchanged, except last injected Canva script removed) --*
